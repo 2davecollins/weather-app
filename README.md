@@ -25,10 +25,11 @@ npm start
 * spread operator map and filter to decode json data
 <br/>
 <br/>
-[Check Node version support for ES7 ](https://node.green/#ES2017)
-<br/>
-[Check Browser support for ES6](https://caniuse.com/#search=es6)
-<br/>
+
+
+Node Support | Browser Support
+------------ | -------------
+ (https://node.green/#ES2017) | (https://caniuse.com/#search=es6)
 
 
 
