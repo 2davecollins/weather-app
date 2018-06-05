@@ -25,6 +25,8 @@ npm start
 * spread operator map and filter to decode json data
 <br/>
 <br/>
+[Check Node version support for ES7 ](https://node.green/#ES2017)
+[Check Browser support for ES6](https://caniuse.com/#search=es6)
 
 
 ![README](http://www.plantuml.com/plantuml/png/RP51IyGm48NlXVw779KbVs5PiGgYotfP5azbIAOs6DibCyeMyRyxQTg6ofwIztNclV2w8uR0Nv--BCh2U21Izn2i-YaBfOtZ8PuMniEPlgEHjx9ZtRVSwrhjaTlUabn5Rzwnmm2CqUNcDX6UnMzEELtsS4unwAyPcO1Y8qDnSRLwPEVbPUDoiXVrueZ7FBMX_qJBpDthK_tyy3QD213dO_1PF_O13H1dQ3n2cF746cJJhfd62mSmN053pgjWE3Gdn8_yg5LSh8Jo-59NKh7WIIuzL8xE7eQbnxa6xR5XlKsDNliGlIFVOMVbJ_y1 "README")
