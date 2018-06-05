@@ -9,38 +9,36 @@ gulp.task('message',() => {
   return console.log('Gulp is running...');
 });
 
-// Copy All HTML files
+// Copy all HTML files
 gulp.task('copyHtml',() => {
   gulp.src('src/*.html')
       .pipe(gulp.dest('dist'));
 });
+
+// Copy all css files
 gulp.task('copyCSS',() => {
     gulp.src('src/css/*.css')
         .pipe(gulp.dest('dist/css'));
 });
+
+//Copy all external js files
 gulp.task('copyJS',() => {
     gulp.src('src/external/*.min.js')
         .pipe(gulp.dest('dist/external'));
 });
 
+//Copy my js file 
 gulp.task('JS',() => {
     gulp.src('src/js/*.js')
         .pipe(gulp.dest('dist/js'));
 });
 
-// Optimize Images
+// Optimize Images not used
 gulp.task('imageMin', () =>
 	gulp.src('src/images/*')
 		.pipe(imagemin())
 		.pipe(gulp.dest('dist/images'))
 );
-
-// Minify JS
-// gulp.task('minify', () => {
-//   gulp.src('src/js/*.js')
-//       .pipe(uglify())
-//       .pipe(gulp.dest('dist/js'));
-// });
 
 // Compile Sass
 gulp.task('sass', () => {
@@ -49,20 +47,15 @@ gulp.task('sass', () => {
       .pipe(gulp.dest('dist/css'));
 });
 
-
-// Scripts
-// gulp.task('scripts', () =>{
-//   gulp.src('src/js/*.js')
-//       .pipe(concat('main.js'))
-//       .pipe(uglify())
-//       .pipe(gulp.dest('dist/js'));
-// });
+// use browserSync live server
 gulp.task('serve', ['sass'], function() {
 
     browserSync.init({
         server: "./dist",
         port: 3001
     });
+
+    //Watch for file changes
 
     gulp.watch('src/js/*', ['JS']);
     gulp.watch('src/images/*', ['imageMin']);
@@ -71,6 +64,6 @@ gulp.task('serve', ['sass'], function() {
     gulp.watch("src/*.html").on('change', browserSync.reload);
 });
 
-
+// Default gulp npm start will run this.
 gulp.task('default', ['message', 'copyHtml','copyCSS','copyJS', 'imageMin', 'sass', 'JS','serve']);
 

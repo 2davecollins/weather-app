@@ -46,7 +46,7 @@ document.addEventListener('DOMContentLoaded', function () {
     //if no data in localstorage set from default dublin checked;
     if(cityList){
         setCityList(cityList);
-        setTimeout(fetchForcast,500);
+        setTimeout(fetchForecast,500);
 
     }else{
         getCityList();
@@ -68,7 +68,7 @@ document.addEventListener('DOMContentLoaded', function () {
         
         ];
         localStorage.setItem("savedCities", JSON.stringify(cityList));
-        setTimeout(fetchForcast,500);       
+        setTimeout(fetchForecast,500);       
     }
     setCityList = (cityList) => cityList.forEach( obj => document.getElementById(obj.btn).checked = obj.checked)
 
@@ -80,19 +80,19 @@ document.addEventListener('DOMContentLoaded', function () {
         const url = getURLMap();        
         return `${url}${type}/{z}/{x}/{y}.png?appid=${api}`;
     }
-    getForcastUrl = (city,code) => {       
+    getForecastUrl = (city,code) => {       
         let api = getAPI_KEY ();        
         return `http://api.openweathermap.org/data/2.5/forecast?q=${city},${code}&APPID=${api}` 
     }
-    clearForcast = () => getCards([]);
-    fetchForcast = () => {       
+    clearForecast = () => getCards([]);
+    fetchForecast = () => {       
         let URL;             
         const cardArray = [];        
-        const forcastList = JSON.parse(localStorage.getItem("savedCities"));
+        const forecastList = JSON.parse(localStorage.getItem("savedCities"));
         
-        forcastList.forEach( (obj) => {
+        forecastList.forEach( (obj) => {
             if(obj.checked){
-                URL = getForcastUrl(obj.city,obj.code);
+                URL = getForecastUrl(obj.city,obj.code);
                 fetch(URL).then(function(res) {
                     // res instanceof Response == true.
                     if (res.ok) {
@@ -145,7 +145,7 @@ document.addEventListener('DOMContentLoaded', function () {
     //cant use city name as html id some cities have spaces
     //plan b use city id add id to number as html tag
     myTrim = (str) => str.replace(/\s+/g, '');
-    // get first day of week forcast for card
+    // get first day of week forecast for card
 
     getDayOfWeek = (day) => {
         switch (day) {
@@ -191,7 +191,7 @@ document.addEventListener('DOMContentLoaded', function () {
         var chartdisplay = new CanvasJS.Chart(id, {
             theme: "light2",
             title: {
-                text: "Forcast"
+                text: "Forecast"
         },
             data: [
                 {
@@ -234,7 +234,7 @@ document.addEventListener('DOMContentLoaded', function () {
     return {        
         setUrl,
         getCards,
-        fetchForcast,
+        fetchForecast,
         createMapDisplay,
         getDayOfWeek,
         extractData
