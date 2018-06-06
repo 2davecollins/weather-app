@@ -4,8 +4,10 @@ const uglify = require('gulp-uglify');
 var browserSync = require('browser-sync').create();
 const sass = require('gulp-sass');
 const concat = require('gulp-concat');
+const eslint = require('gulp-eslint');
 
 gulp.task('message',() => {
+    
   return console.log('Gulp is running...');
 });
 
@@ -47,6 +49,18 @@ gulp.task('sass', () => {
       .pipe(gulp.dest('dist/css'));
 });
 
+gulp.task('lint', function () {
+    return gulp.src('src/js/*.js')
+    .pipe(eslint())
+    .pipe(eslint.format())
+    .pipe(eslint.failAfterError())
+    .pipe(eslint.results(results => {
+        // Called once for all ESLint results.       
+        console.log(`Total Results: ${results.length}`);
+        console.log(`Total Warnings: ${results.warningCount}`);
+        console.log(`Total Errors: ${results.errorCount}`);
+    }));
+});
 // use browserSync live server
 gulp.task('serve', ['sass'], function() {
 

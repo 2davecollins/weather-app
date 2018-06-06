@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const elemsm = document.querySelectorAll('.modal');
     const instances = M.Modal.init(elemsm, {
-        
+
     });
 
     const carNext = document.getElementById("carouselright");
@@ -34,88 +34,88 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     const cityListBtn = document.getElementById("updatecitylist");
-    cityListBtn.addEventListener('click', () =>{
+    cityListBtn.addEventListener('click', () => {
         console.log("update City List");
-        getCityList();                      
+        getCityList();
     });
-    
+
     // create maps on load   
     createMapDisplay();
     //list of cities from checkbox saved to localstorage
-    let cityList =  JSON.parse(localStorage.getItem("savedCities"));
+    const cityList = JSON.parse(localStorage.getItem("savedCities"));
     //if no data in localstorage set from default dublin checked;
-    if(cityList){
+    if (cityList) {
         setCityList(cityList);
-        setTimeout(fetchForecast,500);
+        setTimeout(fetchForecast, 500);
 
-    }else{
+    } else {
         getCityList();
-    }    
-  
+    }
+
 });
 
-(function () { 
+(function () {
 
     getCityList = () => {
         const cityList = [
-            {checked:document.getElementById("dublin").checked, city:"Dublin",code:"IE", btn:"dublin" },
-            {checked:document.getElementById("cork").checked, city:"Cork",code:"IE", btn:"cork" },
-            {checked:document.getElementById("galway").checked, city:"Galway",code:"IE", btn:"galway" },
-            {checked:document.getElementById("london").checked, city:"London",code:"UK",btn:"london" },
-            {checked:document.getElementById("amsterdam").checked, city:"Amsterdam",code:"NL", btn:"amsterdam" },
-            {checked:document.getElementById("berlin").checked, city:"Berlin",code:"DE", btn:"berlin" },
-            {checked:document.getElementById("madrid").checked, city:"Madrid",code:"ES", btn:"madrid" }
-        
+            { checked: document.getElementById("dublin").checked, city: "Dublin", code: "IE", btn: "dublin" },
+            { checked: document.getElementById("cork").checked, city: "Cork", code: "IE", btn: "cork" },
+            { checked: document.getElementById("galway").checked, city: "Galway", code: "IE", btn: "galway" },
+            { checked: document.getElementById("london").checked, city: "London", code: "UK", btn: "london" },
+            { checked: document.getElementById("amsterdam").checked, city: "Amsterdam", code: "NL", btn: "amsterdam" },
+            { checked: document.getElementById("berlin").checked, city: "Berlin", code: "DE", btn: "berlin" },
+            { checked: document.getElementById("madrid").checked, city: "Madrid", code: "ES", btn: "madrid" }
+
         ];
         localStorage.setItem("savedCities", JSON.stringify(cityList));
-        setTimeout(fetchForecast,500);       
-    }
-    setCityList = (cityList) => cityList.forEach( obj => document.getElementById(obj.btn).checked = obj.checked)
+        setTimeout(fetchForecast, 500);
+    };
+    setCityList = (cityList) => cityList.forEach(obj => document.getElementById(obj.btn).checked = obj.checked);
 
-    getAPI_KEY = () => '556e345dbb8e85c073a5dde9e4df820b';   
-    getURLMap = () => 'https://tile.openweathermap.org/map/'; 
+    getAPI_KEY = () => '556e345dbb8e85c073a5dde9e4df820b';
+    getURLMap = () => 'https://tile.openweathermap.org/map/';
 
     getMapUrl = (type) => {
         const api = getAPI_KEY();
-        const url = getURLMap();        
+        const url = getURLMap();
         return `${url}${type}/{z}/{x}/{y}.png?appid=${api}`;
-    }
-    getForecastUrl = (city,code) => {       
-        let api = getAPI_KEY ();        
-        return `http://api.openweathermap.org/data/2.5/forecast?q=${city},${code}&APPID=${api}` 
-    }
+    };
+    getForecastUrl = (city, code) => {
+        const api = getAPI_KEY();
+        return `http://api.openweathermap.org/data/2.5/forecast?q=${city},${code}&APPID=${api}`;
+    };
     clearForecast = () => getCards([]);
-    fetchForecast = () => {       
-        let URL;             
-        const cardArray = [];        
+    fetchForecast = () => {
+        let URL;
+        const cardArray = [];
         const forecastList = JSON.parse(localStorage.getItem("savedCities"));
-        
-        forecastList.forEach( (obj) => {
-            if(obj.checked){
-                URL = getForecastUrl(obj.city,obj.code);
-                fetch(URL).then(function(res) {
+
+        forecastList.forEach((obj) => {
+            if (obj.checked) {
+                URL = getForecastUrl(obj.city, obj.code);
+                fetch(URL).then(function (res) {
                     // res instanceof Response == true.
                     if (res.ok) {
-                      res.json().then(function(data) {                       
-                        cardArray.push(extractData(data));
-                        getCards(cardArray);
-                      });
+                        res.json().then(function (data) {
+                            cardArray.push(extractData(data));
+                            getCards(cardArray);
+                        });
                     } else {
-                      console.log("response status", res.status);
+                        console.log("response status", res.status);
                     }
-                  }, function(e) {
+                }, function (e) {
                     console.log("Fetch failed!", e);
                 });
-            }           
-        });   
+            }
+        });
 
-    }    
+    };
 
     extractData = (dataArr) => {
-       
+
         //destructure returned data from open weather
-        const {city, list, ...restOfObject} = dataArr;
-        const subset = {city, list};
+        const { city, list, ...restOfObject } = dataArr;
+        const subset = { city, list };
         const cityName = city.name;
         const divid = city.id;
         //dt not current time use dt_txt
@@ -123,25 +123,25 @@ document.addEventListener('DOMContentLoaded', function () {
 
         //api returns data every 3 hours for simplicity getting values same time each day
         //next five days        
-        const all_icons = list.map(ic => ic.weather[0].icon);       
-        const icons = all_icons.filter((ic,index) => index % 8 == 0 );       
+        const all_icons = list.map(ic => ic.weather[0].icon);
+        const icons = all_icons.filter((ic, index) => index % 8 === 0);
         //temp in kelvin convert to celcius       
         const kelvin = 273.15;
-        const allTemps = list.map(val => ({              
-              y: Number((val.main.temp - kelvin).toFixed(1))           
-        }));         
-        const dailyTemp = allTemps.filter((temp,index) => index % 8 === 0);
-        
-        o = Object.create(null);
-        o.city  = cityName || "";
-        o.icons = icons || ['01n','01n','01n','01n','01n'];
-        o.color = "red";    //TODO based on temp ??
-        o.day   = getDayOfWeek(day) || "Mon";
-        o.data  = dailyTemp || [];
-        o.chartdiv = "id"+divid;      
+        const allTemps = list.map(val => ({
+            y: Number((val.main.temp - kelvin).toFixed(1))
+        }));
+        const dailyTemp = allTemps.filter((temp, index) => index % 8 === 0);
 
-       return o;
-    }
+        o = Object.create(null);
+        o.city = cityName || "";
+        o.icons = icons || ['01n', '01n', '01n', '01n', '01n'];
+        o.color = "red";    //TODO based on temp ??
+        o.day = getDayOfWeek(day) || "Mon";
+        o.data = dailyTemp || [];
+        o.chartdiv = `id+${divid}`;
+
+        return o;
+    };
     //cant use city name as html id some cities have spaces
     //plan b use city id add id to number as html tag
     myTrim = (str) => str.replace(/\s+/g, '');
@@ -164,26 +164,26 @@ document.addEventListener('DOMContentLoaded', function () {
             case 6:
                 return "Sat";
             default:
-                throw new Exception('Unknown Day: '+day);
+                throw new Exception(`Unknown Day: ${day}`);
         }
-    }  
+    };
 
-   
-    setUrl = ( url ) =>  URL = url;  
+
+    setUrl = (url) => URL = url;
     getCards = (cardArray) => {
         //reset the display        
         document.getElementById("wxcards").innerHTML = "";
-        
-        if(cardArray.length == 0){
+
+        if (cardArray.length === 0) {
             return;
         };
         cardArray.forEach((a) => {
             getCard(a);
             getChart(a.chartdiv, a.data, a.color);
-        });    
+        });
     };
     getCard = (Obj) => {
-        const c = new Card(Obj);        
+        const c = new Card(Obj);
         const objTo = document.getElementById('wxcards');
         objTo.appendChild(c.generateCard());
     };
@@ -192,7 +192,7 @@ document.addEventListener('DOMContentLoaded', function () {
             theme: "light2",
             title: {
                 text: "Forecast"
-        },
+            },
             data: [
                 {
                     //bar chart   
@@ -210,28 +210,28 @@ document.addEventListener('DOMContentLoaded', function () {
             ]
         });
         chartdisplay.render();
-    }
+    };
 
-    createMapDisplay =  () => {
-   
-        let rain_url = getMapUrl("precipitation_new");
-        let pressure_url = getMapUrl("pressure_new");
-        let temp_url = getMapUrl("temp_new");
-        let wind_url = getMapUrl("wind_new");
-           
+    createMapDisplay = () => {
+
+        const rain_url = getMapUrl("precipitation_new");
+        const pressure_url = getMapUrl("pressure_new");
+        const temp_url = getMapUrl("temp_new");
+        const wind_url = getMapUrl("wind_new");
+
         rain = new WxMap('rainmapid');
         pressure = new WxMap('pressuremapid');
         heat = new WxMap('heatmapid');
         wind = new WxMap('windmapid');
-    
+
         rain.createMap(rain_url);
         pressure.createMap(pressure_url);
         heat.createMap(temp_url);
-        wind.createMap(wind_url);    
-    }
-              
+        wind.createMap(wind_url);
+    };
 
-    return {        
+
+    return {
         setUrl,
         getCards,
         fetchForecast,
@@ -247,24 +247,24 @@ class WxMap {
     constructor(el) {
         this.el = el;
     }
-    createMap(type) {              
-        
+    createMap(type) {
+
         const map = new L.map(this.el, {
             center: [53, -6.09],
             minZoom: 3,
             zoom: 3,
             dragging: false,
             doubleClickZoom: false,
-            scrollWheelZoom: false           
+            scrollWheelZoom: false
         });
 
-        L.tileLayer( 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-            subdomains: ['a','b','c']
-        }).addTo( map );
+            subdomains: ['a', 'b', 'c']
+        }).addTo(map);
         const layer = L.tileLayer(type);
-        layer.addTo( map );        
-        
+        layer.addTo(map);
+
     }
 }
 
@@ -273,12 +273,12 @@ class Card {
         this.city = obj.city;
         this.day = obj.day;
         this.icons = obj.icons;
-        this.chartdiv = obj.chartdiv;       
+        this.chartdiv = obj.chartdiv;
     }
     get cardDiv() {
         return this.generateCard();
-    }    
-    generateCard() {        
+    }
+    generateCard() {
         const markup = `       
             <div class="card-panel teal">
                 <h5 class="card-title white-text">${this.city}</h5>
