@@ -109,7 +109,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }           
         });   
 
-    }
+    }    
 
     extractData = (dataArr) => {
        
