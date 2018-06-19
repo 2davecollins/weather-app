@@ -80,7 +80,7 @@ gulp.task('w3c', () => {
             reportpath: 'w3cErrors/error.html',                       
             relaxerror: ['Bad value X-UA-Compatible for attribute http-equiv on element meta.',
                 'Element title must not be empty.']
-        }))
+        }));
 });
 
 

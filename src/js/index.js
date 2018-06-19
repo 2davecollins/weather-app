@@ -51,6 +51,13 @@ document.addEventListener('DOMContentLoaded', function () {
     } else {
         getCityList();
     }
+   
+    const radialObj = radialIndicator('#indicatorContainer', {
+        barColor : '#87CEEB',
+        barWidth : 10,
+        initValue : 40
+    });
+    radialObj.animate(60);  
 
 });
 
@@ -110,12 +117,15 @@ document.addEventListener('DOMContentLoaded', function () {
         });
 
     };
+    average = arr => arr.reduce( ( p, c ) => p + c, 0 ) / arr.length;
 
     extractData = (dataArr) => {
 
         //destructure returned data from open weather
         const { city, list, ...restOfObject } = dataArr;
         const subset = { city, list };
+
+        
         const cityName = city.name;
         const divid = city.id;
         //dt not current time use dt_txt
@@ -130,8 +140,11 @@ document.addEventListener('DOMContentLoaded', function () {
         const allTemps = list.map(val => ({
             y: Number((val.main.temp - kelvin).toFixed(1))
         }));
+        const allWinds = list.map(val =>(  val.wind.speed) );
         const dailyTemp = allTemps.filter((temp, index) => index % 8 === 0);
-
+        const dailyWind = allWinds.filter((wind,index)=> index % 8 === 0 );
+       
+        //console.log(average(dailyWind)/20);
         o = Object.create(null);
         o.city = cityName || "";
         o.icons = icons || ['01n', '01n', '01n', '01n', '01n'];
@@ -139,6 +152,8 @@ document.addEventListener('DOMContentLoaded', function () {
         o.day = getDayOfWeek(day) || "Mon";
         o.data = dailyTemp || [];
         o.chartdiv = `id+${divid}`;
+        o.winddiv = `idw+${divid}`;
+        o.wind = dailyWind || [] ;
 
         return o;
     };
@@ -146,6 +161,34 @@ document.addEventListener('DOMContentLoaded', function () {
     //plan b use city id add id to number as html tag
     myTrim = (str) => str.replace(/\s+/g, '');
     // get first day of week forecast for card
+
+    getProgressBar = (el,val) => {        
+        const elment = `.${el}`;
+        var bar = new ProgressBar.SemiCircle(elment, {
+            strokeWidth: 6,
+            easing: 'easeInOut',
+            duration: 1400,
+            color: '#FF0A82',
+            trailColor: '#eee',
+            trailWidth: 1,
+            svgStyle: null,
+           
+            step: (state, bar) => {               
+                var value = Math.round(bar.value() * 100);
+                if (value === 0) {
+                  bar.setText('');
+                } else {
+                  bar.setText(value*1.5);
+                }
+            
+                bar.text.style.color = state.color;
+              }
+          });
+
+        bar.text.style.fontFamily = '"Raleway", Helvetica, sans-serif';
+        bar.text.style.fontSize = '1rem';          
+        bar.animate(val);
+    },
 
     getDayOfWeek = (day) => {
         switch (day) {
@@ -180,6 +223,7 @@ document.addEventListener('DOMContentLoaded', function () {
         cardArray.forEach((a) => {
             getCard(a);
             getChart(a.chartdiv, a.data, a.color);
+            
         });
     };
     getCard = (Obj) => {
@@ -210,9 +254,14 @@ document.addEventListener('DOMContentLoaded', function () {
             ]
         });
         chartdisplay.render();
+        
     };
 
     createMapDisplay = () => {
+
+       
+
+        const coords = navigator.geolocation.coords;
 
         const rain_url = getMapUrl("precipitation_new");
         const pressure_url = getMapUrl("pressure_new");
@@ -224,10 +273,24 @@ document.addEventListener('DOMContentLoaded', function () {
         heat = new WxMap('heatmapid');
         wind = new WxMap('windmapid');
 
-        rain.createMap(rain_url);
-        pressure.createMap(pressure_url);
-        heat.createMap(temp_url);
-        wind.createMap(wind_url);
+        rain.createMap();
+        rain.addLegent("Rain");
+        rain.addWeather(rain_url);
+        
+       // rain.addMarker();
+        pressure.createMap();
+        pressure.addLegent("Pressure");
+        pressure.addWeather(pressure_url);
+        heat.createMap();
+        heat.addLegent("Temperature");
+        heat.addWeather(temp_url);
+        wind.createMap();
+        wind.addLegent("Wind");
+        wind.addWeather(wind_url);
+
+        navigator.geolocation.getCurrentPosition(function(position) {
+            rain.addMarker(position.coords.latitude, position.coords.longitude);
+          });
     };
 
 
@@ -246,10 +309,11 @@ document.addEventListener('DOMContentLoaded', function () {
 class WxMap {
     constructor(el) {
         this.el = el;
+        this.map;
+        
     }
-    createMap(type) {
-
-        const map = new L.map(this.el, {
+    createMap() {
+        this.map = new L.map(this.el, {
             center: [53, -6.09],
             minZoom: 3,
             zoom: 3,
@@ -257,15 +321,27 @@ class WxMap {
             doubleClickZoom: false,
             scrollWheelZoom: false
         });
-
         L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
             subdomains: ['a', 'b', 'c']
-        }).addTo(map);
-        const layer = L.tileLayer(type);
-        layer.addTo(map);
-
+        }).addTo(this.map);
+        
     }
+    addWeather(type){
+        const layer = L.tileLayer(type);
+        layer.addTo(this.map);
+    }
+    addLegent(title){
+        const legend = L.control({ position: 'topleft' });
+        legend.onAdd = function () {
+            const div = L.DomUtil.create('div', 'info legend blue-text text-darken-2');
+                div.innerHTML = title;
+            return div;        };
+        legend.addTo(this.map);
+    }
+    addMarker(lat,long){
+        const marker = L.marker([lat, long],{title:"I'm Here"}).addTo(this.map);
+    }   
 }
 
 class Card {
@@ -274,25 +350,25 @@ class Card {
         this.day = obj.day;
         this.icons = obj.icons;
         this.chartdiv = obj.chartdiv;
+        this.wind = obj.wind;
     }
     get cardDiv() {
         return this.generateCard();
     }
     generateCard() {
+        const ws = average(this.wind).toFixed(2);
         const markup = `       
             <div class="card-panel teal">
-                <h5 class="card-title white-text">${this.city}</h5>
-                <p class="white-text"><span>${this.day}</span></p>
-               
+                <h6 class="card-title white-text">${this.city}</h6>
+                <p class="white-text"><span>${this.day}</span><span class="floatright">wind ${ws}m/s</span></p>               
                 <div class="row">                   
                     <div class="col s2"><img src="http://openweathermap.org/img/w/${this.icons[0]}.png" alt="Smiley face"></div>
                     <div class="col s2"><img src="http://openweathermap.org/img/w/${this.icons[1]}.png" alt="Smiley face"></div>
                     <div class="col s2"><img src="http://openweathermap.org/img/w/${this.icons[2]}.png" alt="Smiley face"></div>
                     <div class="col s2"><img src="http://openweathermap.org/img/w/${this.icons[3]}.png" alt="Smiley face"></div>
-                    <div class="col s2"><img src="http://openweathermap.org/img/w/${this.icons[4]}.png" alt="Smiley face"></div>
-                </div>              
-                <div id=${this.chartdiv} style="height: 200px; width: 100%;"></div>            
-                
+                    <div class="col s2"><img src="http://openweathermap.org/img/w/${this.icons[4]}.png" alt="Smiley face"></div>                   
+                 </div>              
+                <div id=${this.chartdiv} style="height: 200px; width: 100%;"></div>                 
             </div>       
         `;
         const card = document.createElement("div");
