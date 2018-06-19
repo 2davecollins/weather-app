@@ -1,3 +1,5 @@
 node_modules/
 dist/
-w3Errors/
+w3cErrors/
+_tempvlidation.html
+validation.xml
