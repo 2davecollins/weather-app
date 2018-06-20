@@ -1,8 +1,5 @@
 node_modules/
 dist/
-<<<<<<< HEAD
-=======
 w3cErrors/
 _tempvlidation.html
 validation.xml
->>>>>>> f997c25e3faa48e6d7db87222709d41d38408ec3
