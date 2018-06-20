@@ -22,15 +22,22 @@ document.addEventListener('DOMContentLoaded', function () {
     const elemsm = document.querySelectorAll('.modal');
     const instances = M.Modal.init(elemsm, {
 
-    });
+    }); 
+    
 
     const carNext = document.getElementById("carouselright");
-    carNext.addEventListener('click', () => {
-        instancescar[0].prev();
-    });
-    const carPrev = document.getElementById("carouselleft");
-    carPrev.addEventListener('click', () => {
+    carNext.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();       
         instancescar[0].next();
+       
+    });
+
+    const carPrev = document.getElementById("carouselleft");
+    carPrev.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();      
+        instancescar[0].prev();        
     });
 
     const cityListBtn = document.getElementById("updatecitylist");
@@ -50,15 +57,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     } else {
         getCityList();
-    }
+    }   
    
-    const radialObj = radialIndicator('#indicatorContainer', {
-        barColor : '#87CEEB',
-        barWidth : 10,
-        initValue : 40
-    });
-    radialObj.animate(60);  
-
 });
 
 (function () {
