@@ -15,6 +15,9 @@ npm install or yarn
 # start server with 
 npm start
 
+# test javascript
+npm test
+
 ```
 
 ##### Project uses ES6 features where appropriate

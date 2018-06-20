@@ -1,0 +1,28 @@
+{
+    "parserOptions": {
+        "ecmaVersion": 7,
+        "sourceType": "module",
+        "ecmaFeatures": {
+            "experimentalObjectRestSpread": true
+        }
+    },
+    "rules": {
+        "semi": 2,
+        "eqeqeq": "error",
+        "curly": "error",
+        "no-eval": "error",
+        "no-implied-eval": "error",
+        "prefer-const": "error",
+        "prefer-spread":"error",
+        "prefer-rest-params":"error",
+        "prefer-template":"error",
+        "require-await": "error",
+        "default-case": 1,  
+
+        "no-console":"off"
+       
+    },
+    "env": {
+        "browser": true
+    }
+}
