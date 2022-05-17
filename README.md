@@ -61,3 +61,7 @@ Node Support | Browser Support
 
 
 ###### added eslint can be found on branch eslint
+
+#### this is what the app will look like
+
+![image](https://user-images.githubusercontent.com/9034375/168808291-1bc692c4-ba6a-4de4-b708-0e8171095adf.png)
